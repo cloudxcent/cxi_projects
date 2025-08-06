@@ -1,0 +1,8 @@
+2025-07-20 11:42:44,666 - HTTP Request: POST https://azurevr.openai.azure.com/openai/files?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:45,669 - HTTP Request: POST https://azurevr.openai.azure.com/openai/files?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:47,540 - HTTP Request: POST https://azurevr.openai.azure.com/openai/vector_stores?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:47,818 - HTTP Request: GET https://azurevr.openai.azure.com/openai/vector_stores/vs_8xav2BsYYN52E0amRnHRJ07j?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:51,155 - HTTP Request: GET https://azurevr.openai.azure.com/openai/vector_stores/vs_8xav2BsYYN52E0amRnHRJ07j?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:51,368 - HTTP Request: POST https://azurevr.openai.azure.com/openai/assistants?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:51,533 - HTTP Request: POST https://azurevr.openai.azure.com/openai/threads?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 11:42:56,157 - Assistant: Hello! Ask me anything about today's menu.

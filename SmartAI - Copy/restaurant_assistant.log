@@ -1,0 +1,277 @@
+
+===== Customer Session 1 - 2025-08-05 START =====
+[17:38:52] Assistant: Welcome to Nisarg Hotel! It's currently 05:38 PM and we're serving our snacks menu.
+[17:38:59] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:39:15] User: I want to order 1 veg manchurian, 1 veg angara and two gulab jamun.
+[17:39:19] Assistant: Added 1 Veg Manchurian to your order.
+[17:39:23] Assistant: Added 1 Veg Angara to your order.
+[17:39:27] Assistant: Added 2 Gulab Jamun to your order.
+[17:39:30] Assistant: Let me confirm your complete order:
+[17:39:33] Assistant: 1 Veg Manchurian
+[17:39:36] Assistant: 1 Veg Angara
+[17:39:38] Assistant: 2 Gulab Jamun
+[17:39:41] Assistant: That will be four hundred and thirty rupees in total
+[17:39:44] Assistant: Should I place this order for you?
+[17:39:59] User: Yes.
+[17:39:59] Assistant: Your order is confirmed! Your order number is 77 and the total is four hundred and thirty rupees. Thank you!
+[17:40:09] Assistant: Your order number is 77. Please let me know if you need anything else.
+[17:40:22] User: Exit.
+[17:40:23] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+===== Customer Session 2 - 2025-08-05 START =====
+[17:41:15] Assistant: Welcome to Nisarg Hotel! It's currently 05:41 PM and we're serving our snacks menu.
+[17:41:22] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:41:34] User: Show me your menu options.
+[17:41:36] Assistant: Grilled Cheese Sandwich, Veg Club Sandwich, Pav Bhaji, Masala Dosa, Uttapam, Idli Sambar, and Vada Pav
+[17:41:45] Assistant: What would you like to order?
+[17:41:55] User: I would like to order one grilled cheese sandwich and two veg club sandwich.
+[17:41:57] Assistant: Added 1 Grilled Cheese Sandwich to your order.
+[17:42:01] Assistant: Added 2 Veg Club Sandwich to your order.
+[17:42:05] Assistant: Would you like to start your meal with some starters while your main course is being prepared?
+[17:42:14] User: Yes, show me.
+[17:42:14] Assistant: We have Paneer Tikka, Veg Manchurian, and French Fries. Would you like to order any starters?
+[17:42:27] User: I would like to order 1 paneer tikka.
+[17:42:30] Assistant: Added 1 Paneer Tikka.
+[17:42:33] Assistant: Would you like to finish your meal with some desserts?
+[17:42:40] User: No thanks.
+[17:42:40] Assistant: Let me confirm your complete order:
+[17:42:43] Assistant: 1 Grilled Cheese Sandwich
+[17:42:46] Assistant: 2 Veg Club Sandwich
+[17:42:49] Assistant: 1 Paneer Tikka
+[17:42:52] Assistant: The total comes to five hundred and twenty rupees
+[17:42:56] Assistant: Should I place this order for you?
+[17:43:04] User: Yes, place this order.
+[17:43:04] Assistant: Your order has been placed! Your order number is 78 and the total is five hundred and twenty rupees. Thank you!
+[17:43:12] Assistant: Your order number is 78. Please let me know if you need anything else.
+[17:43:22] User: Exit.
+[17:43:23] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+===== Customer Session 3 - 2025-08-05 START =====
+[17:45:37] Assistant: Welcome to Nisarg Hotel! It's currently 05:45 PM and we're serving our snacks menu.
+[17:45:45] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:46:00] User: Show me your dessert menu.
+[17:46:02] Assistant: We have Gulab Jamun, and Shrikhand. Would you like to order any desserts?
+[17:46:16] User: Order 2. Gulab Jamun.
+[17:46:18] Assistant: Added 2 Gulab Jamun.
+[17:46:23] Assistant: Would you like to order any main course dishes now?
+[17:46:30] User: No.
+[17:46:30] Assistant: Would you like to start your meal with some starters?
+[17:46:38] User: Yes.
+[17:46:38] Assistant: We have Paneer Tikka, Veg Manchurian, and French Fries. Would you like to order any starters?
+[17:46:57] User: Order 5 French fries.
+[17:46:59] Assistant: Added 5 French Fries.
+[17:47:02] Assistant: Let me confirm your complete order:
+[17:47:06] Assistant: 2 Gulab Jamun
+[17:47:09] Assistant: 5 French Fries
+[17:47:12] Assistant: The total comes to five hundred and fifty rupees
+[17:47:16] Assistant: Should I place this order for you?
+[17:47:24] User: Yes, place the order.
+[17:47:24] Assistant: Your order has been placed! Your order number is 79 and the total is five hundred and fifty rupees. Thank you!
+[17:47:33] Assistant: Your order number is 79. Please let me know if you need anything else.
+[17:47:45] User: Exit.
+[17:47:46] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+===== Customer Session 4 - 2025-08-05 START =====
+[17:48:53] Assistant: Welcome to Nisarg Hotel! It's currently 05:48 PM and we're serving our snacks menu.
+[17:49:01] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:49:16] User: Show me your starters option.
+[17:49:17] Assistant: We have Paneer Tikka, Veg Manchurian, and French Fries. Would you like to order any starters?
+[17:49:31] User: I would like to order 1 paneer tikka and two veg manchurian.
+[17:49:34] Assistant: Added 1 Paneer Tikka.
+[17:49:37] Assistant: Added 2 Veg Manchurian.
+[17:49:40] Assistant: Would you like to order any main course dishes now?
+[17:49:47] User: Yes, show me.
+[17:49:47] Assistant: Grilled Cheese Sandwich, Veg Club Sandwich, Pav Bhaji, Masala Dosa, Uttapam, Idli Sambar, and Vada Pav
+[17:49:55] Assistant: What would you like to order?
+[17:50:03] User: I would like to order one beige club sandwich.
+[17:50:05] Assistant: Added 1 Veg Club Sandwich to your order.
+[17:50:10] Assistant: Would you like to finish your meal with some desserts?
+[17:50:18] User: No thanks.
+[17:50:18] Assistant: Let me confirm your complete order:
+[17:50:23] Assistant: 1 Paneer Tikka
+[17:50:25] Assistant: 2 Veg Manchurian
+[17:50:28] Assistant: 1 Veg Club Sandwich
+[17:50:31] Assistant: The total comes to five hundred and ninety rupees
+[17:50:35] Assistant: Should I place this order for you?
+[17:50:41] User: Yes, please.
+[17:50:41] Assistant: Your order has been placed! Your order number is 80 and the total is five hundred and ninety rupees. Thank you!
+[17:50:50] Assistant: Your order number is 80. Please let me know if you need anything else.
+[17:51:03] User: Exit.
+[17:51:04] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+
+===== Customer Session 5 - 2025-08-05 START =====
+[17:51:43] Assistant: Welcome to Nisarg Hotel! It's currently 05:51 PM and we're serving our snacks menu.
+[17:51:50] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:52:04] User: What are the opening and closing hours of your restaurant?
+[17:52:16] Assistant: Our restaurant operates from 6:00 AM to 11:00 PM, Monday to Sunday.
+[17:52:29] User: Is the parking available in your restaurant?
+[17:52:40] Assistant: Yes, we offer free parking at Nisarg Hotel Solapur.
+[17:52:51] User: Which dish is best for four people?
+[17:52:57] Assistant: For a group of four, I recommend trying our 'Thali' options or combo meals. These are great for sharing and offer a variety of dishes to enjoy together.
+[17:53:13] User: Which is the best dish for a gravy?
+[17:53:18] Assistant: For a delicious gravy dish, I recommend 'Paneer Butter Masala', 'Dal Makhani', or 'Malai Kofta'. These are all rich and flavorful options that pair well with rice or bread.
+[17:53:35] User: Give me kids meal.
+[17:53:38] Assistant: Sorry, we don't have kids meal on our menu right now.
+[17:53:49] User: Exit.
+[17:53:50] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+
+===== Customer Session 6 - 2025-08-05 START =====
+[17:56:37] Assistant: Welcome to Nisarg Hotel! It's currently 05:56 PM and we're serving our snacks menu.
+[17:56:45] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:57:00] User: I want to order 2 gulab jamun, 1 veg angara and two French fries.
+[17:57:06] Assistant: Added 2 Gulab Jamun to your order.
+[17:57:09] Assistant: Added 1 Veg Angara to your order.
+[17:57:13] Assistant: Added 2 French Fries to your order.
+[17:57:16] Assistant: Let me confirm your complete order:
+[17:57:19] Assistant: 2 Gulab Jamun
+[17:57:21] Assistant: 1 Veg Angara
+[17:57:24] Assistant: 2 French Fries
+[17:57:26] Assistant: That will be four hundred and seventy rupees in total
+[17:57:30] Assistant: Should I place this order for you?
+[17:57:47] User: Yes, please.
+[17:57:47] Assistant: Your order is confirmed! Your order number is 81 and the total is four hundred and seventy rupees. Thank you!
+[17:57:56] Assistant: Your order number is 81. Please let me know if you need anything else.
+[17:58:05] User: What is the status of my order?
+[17:58:07] Assistant: Your order status is: processing.
+[17:58:14] User: Exit.
+[17:58:16] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+===== Customer Session 7 - 2025-08-05 START =====
+[17:58:55] Assistant: Welcome to Nisarg Hotel! It's currently 05:58 PM and we're serving our snacks menu.
+[17:59:03] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[17:59:21] User: I want to order 5 veg manchurian, 2 French fries and two shrikhand.
+[17:59:28] Assistant: Added 5 Veg Manchurian to your order.
+[17:59:32] Assistant: Added 2 French Fries to your order.
+[17:59:35] Assistant: Added 2 Shrikhand to your order.
+[17:59:38] Assistant: Let me confirm your complete order:
+[17:59:43] Assistant: 5 Veg Manchurian
+[17:59:46] Assistant: 2 French Fries
+[17:59:49] Assistant: 2 Shrikhand
+[17:59:52] Assistant: That will be one thousand rupees in total
+[17:59:56] Assistant: Should I place this order for you?
+[18:00:04] User: No.
+[18:00:04] Assistant: No problem at all. I've cancelled this order. What would you like instead?
+[18:00:15] User: No thanks. Exit.
+[18:00:17] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+===== Customer Session 8 - 2025-08-05 START =====
+[18:05:51] Assistant: Welcome to Nisarg Hotel! It's currently 06:05 PM and we're serving our snacks menu.
+[18:06:04] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[18:06:17] User: Show me your menu.
+[18:06:22] Assistant: Grilled Cheese Sandwich, Veg Club Sandwich, Pav Bhaji, Masala Dosa, Uttapam, Idli Sambar, and Vada Pav
+[18:06:31] Assistant: What would you like to order?
+[18:06:40] User: Give me a description of grilled cheese sandwich.
+[18:06:53] Assistant: The Grilled Cheese Sandwich is a classic favorite made with slices of bread and filled with a generous amount of cheese. It's grilled until the bread is crisp and the cheese melts wonderfully, creating a warm and comforting dish that's perfect for any meal or as a quick snack. If you're looking for a heartwarming treat, this is the one!
+[18:07:16] Assistant: What would you like to order from our main courses?
+[18:07:27] User: Then order grilled cheese sandwich.
+[18:07:31] Assistant: Added 1 Grilled Cheese Sandwich to your order.
+[18:07:36] Assistant: Would you like to start your meal with some starters while your main course is being prepared?
+[18:07:45] User: No.
+[18:07:45] Assistant: Would you like to finish your meal with some desserts?
+[18:07:54] User: Yes, show me.
+[18:07:54] Assistant: We have Gulab Jamun, and Shrikhand. Would you like to order any desserts?
+[18:08:35] User: Order 2. Gulab Jamun.
+[18:08:37] Assistant: Added 2 Gulab Jamun.
+[18:08:40] Assistant: Let me confirm your complete order:
+[18:08:43] Assistant: 1 Grilled Cheese Sandwich
+[18:08:47] Assistant: 2 Gulab Jamun
+[18:08:50] Assistant: The total comes to one hundred and ninety rupees
+[18:08:54] Assistant: Should I place this order for you?
+[18:09:21] User: Yes.
+[18:09:21] Assistant: Your order has been placed! Your order number is 82 and the total is one hundred and ninety rupees. Thank you!
+[18:09:30] Assistant: Your order number is 82. Please let me know if you need anything else.
+[18:09:41] User: No thanks.
+[18:09:43] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+
+
+
+===== Customer Session 9 - 2025-08-05 START =====
+[18:13:59] Assistant: Welcome to Nisarg Hotel! It's currently 06:13 PM and we're serving our snacks menu.
+[18:14:08] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[18:14:19] User: Menu.
+[18:14:22] Assistant: Grilled Cheese Sandwich, Veg Club Sandwich, Pav Bhaji, Masala Dosa, Uttapam, Idli Sambar, and Vada Pav
+[18:14:31] Assistant: What would you like to order?
+[18:14:39] User: I want the price of Pav bhaji.
+[18:14:46] Assistant: Please wait, I'm still thinking...
+[18:14:50] Assistant: The price of Pav Bhaji at Nisarg Hotel is ₹100.
+[18:14:59] Assistant: What would you like to order from our main courses?
+[18:15:09] User: Nothing.
+[18:15:16] Assistant: Alright! If you have any other questions or need further assistance in the future, feel free to ask. Enjoy your day!
+[18:15:26] Assistant: What would you like to order from our main courses?
+[18:15:57] User: Exit.
+[18:16:00] Assistant: Thank you, please visit again!
+===== Customer Session END =====
+
+
+===== Customer Session 10 - 2025-08-05 START =====
+[18:18:59] Assistant: Welcome to Nisarg Hotel! It's currently 06:18 PM and we're serving our snacks menu.
+[18:19:07] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[18:19:26] User: I would like to order 2 Gulab jamun and 1 shrikhand and exit.
+[18:19:31] Assistant: Added 2 Gulab Jamun to your order.
+[18:19:34] Assistant: Added 1 Shrikhand to your order.
+[18:19:38] Assistant: Let me confirm your complete order:
+[18:19:41] Assistant: 2 Gulab Jamun
+[18:19:43] Assistant: 1 Shrikhand
+[18:19:46] Assistant: That will be one hundred and sixty rupees in total
+[18:19:50] Assistant: Should I place this order for you?
+[18:19:55] User: Yes.
+[18:19:55] Assistant: Your order is confirmed! Your order number is 83 and the total is one hundred and sixty rupees. Thank you!
+[18:20:04] Assistant: Your order number is 83. Please let me know if you need anything else.
+[18:20:24] User: Exit.
+[18:20:26] Assistant: Thank you for visiting Nisarg Hotel! We hope to see you again soon.
+===== Customer Session END =====
+[23:40:31] Assistant: Welcome to Nisarg Hotel! It's currently 11:40 PM and we're serving our dinner menu.
+
+===== Customer Session 1 - 2025-08-06 START =====
+
+===== Customer Session 2 - 2025-08-06 START =====
+[00:09:28] Assistant: Welcome to Nisarg Hotel! It's currently 12:09 AM and we're serving our dinner menu.
+[00:09:36] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[00:09:47] User: Show me your menu.
+[00:09:48] Assistant: Veg Fried Rice, and Hakka Noodles
+
+===== Customer Session 3 - 2025-08-06 START =====
+[12:04:28] Assistant: Welcome to Nisarg Hotel! It's currently 12:04 PM and we're serving our lunch menu.
+[12:04:36] Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.
+[12:04:46] User: Show me your menu options.
+[12:04:48] Assistant: Veg Pulao, and Jeera Rice
+[12:04:52] Assistant: Maharashtrian Thali, Punjabi Thali, Dal Fry, Paneer Butter Masala, Veg Kolhapuri, Palak Paneer, Chana Masala, and Vegetable Biryani
+[12:05:02] Assistant: What would you like to order?
+[12:05:10] User: I would like to order one paneer butter masala and two veg kolhapuri.
+[12:05:13] Assistant: Added 1 Paneer Butter Masala to your order.
+[12:05:17] Assistant: Added 2 Veg Kolhapuri to your order.
+[12:05:20] Assistant: Would you like to start your meal with some starters while your main course is being prepared?
+[12:05:28] User: Yes.
+[12:05:28] Assistant: We have Paneer Tikka, Veg Manchurian, and Spring Rolls. Would you like to order any starters?
+[12:05:40] User: Also add 1 spring rolls.
+[12:05:41] Assistant: Added 1 Spring Rolls.
+[12:05:44] Assistant: Would you like to finish your meal with some desserts?
+[12:05:51] User: No thanks.
+[12:05:51] Assistant: Let me confirm your complete order:
+[12:05:55] Assistant: 1 Paneer Butter Masala
+[12:05:58] Assistant: 2 Veg Kolhapuri
+[12:06:00] Assistant: 1 Spring Rolls
+[12:06:03] Assistant: The total comes to six hundred and thirty rupees
+[12:06:07] Assistant: Should I place this order for you?
+[12:06:13] User: Yes, place the order.
+[12:06:13] Assistant: Your order has been placed! Your order number is 84 and the total is six hundred and thirty rupees. Thank you!
+[12:06:22] Assistant: Your order number is 84. Please let me know if you need anything else.
+[12:06:35] User: The 3D print Small demo print.
+[12:06:42] Assistant: Please wait, I'm still thinking...
+[12:06:46] Assistant: It seems there might be a misunderstanding. The information you're inquiring about doesn't match the contents of the provided documents, which are related to the restaurant menu of Nisarg Hotel in Solapur. If you have any specific questions about the restaurant menu or services, please let me know!

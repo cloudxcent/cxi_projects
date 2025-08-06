@@ -1,0 +1,7 @@
+USER: may i know your name?
+ASSISTANT: Yes, my name is Assistant. How may I help you today?
+USER: yes, my name is.
+ASSISTANT: Hello! How can I assist you today?
+USER: what's in the menu?
+USER: vegetarian thales.
+ASSISTANT: We have various vegetarian thali options. Would you like North Indian or South Indian style?

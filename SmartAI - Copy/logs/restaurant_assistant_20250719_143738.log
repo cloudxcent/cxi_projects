@@ -1,0 +1,8 @@
+2025-07-19 14:37:38,368 - INFO - Starting Restaurant Information Assistant
+2025-07-19 14:37:38,384 - INFO - Uploading knowledge file: restaurant_info.txt
+2025-07-19 14:37:40,644 - INFO - HTTP Request: POST https://azurevr.openai.azure.com/openai/files?api-version=2024-03-01-preview "HTTP/1.1 200 OK"
+2025-07-19 14:37:40,644 - INFO - File uploaded with ID: assistant-Ro2iukE3kXsvKonVaFpy9v
+2025-07-19 14:37:40,644 - INFO - Creating vector store...
+2025-07-19 14:37:40,644 - ERROR - Failed to setup knowledge base: 'Beta' object has no attribute 'vector_stores'
+2025-07-19 14:37:40,644 - CRITICAL - Application failed: 'Beta' object has no attribute 'vector_stores'
+2025-07-19 14:37:40,659 - INFO - Application shutdown

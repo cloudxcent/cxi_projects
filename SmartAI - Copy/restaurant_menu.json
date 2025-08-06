@@ -1,0 +1,308 @@
+{
+  "menu": {
+    "breakfast": {
+      "Starters": [
+        {
+          "name": "Aloo Tikki",
+          "price": 50,
+          "description": "Spiced potato patties"
+        },
+        {
+          "name": "Sabudana Vada",
+          "price": 60,
+          "description": "Crispy tapioca pearl fritters"
+        }
+      ],
+      "Main Course": [
+        {
+          "name": "Thalipeeth",
+          "price": 70,
+          "description": "Multigrain pancake with spicy chutney"
+        },
+        {
+          "name": "Dhapate",
+          "price": 60,
+          "description": "Spicy mixed flour flatbread"
+        },
+        {
+          "name": "Poha",
+          "price": 40,
+          "description": "Flattened rice with peanuts and spices"
+        },
+        {
+          "name": "Upma",
+          "price": 45,
+          "description": "Semolina cooked with vegetables"
+        },
+        {
+          "name": "Misal Pav",
+          "price": 65,
+          "description": "Spicy sprouted curry with bread rolls"
+        },
+        {
+          "name": "Sheera",
+          "price": 50,
+          "description": "Sweet semolina pudding with nuts"
+        },
+        {
+          "name": "Sabudana Khichdi",
+          "price": 55,
+          "description": "Tapioca pearls cooked with peanuts and spices"
+        }
+      ],
+      "Beverages": [
+        {
+          "name": "Masala Chai",
+          "price": 20,
+          "description": "Spiced Indian tea"
+        },
+        {
+          "name": "Filter Coffee",
+          "price": 25,
+          "description": "South Indian style coffee"
+        }
+      ]
+    },
+    "lunch": {
+      "Starters": [
+        {
+          "name": "Paneer Tikka",
+          "price": 190,
+          "description": "Grilled cottage cheese cubes"
+        },
+        {
+          "name": "Veg Manchurian",
+          "price": 140,
+          "description": "Fried vegetable balls in tangy sauce"
+        },
+        {
+          "name": "Spring Rolls",
+          "price": 120,
+          "description": "Crispy vegetable rolls"
+        }
+      ],
+      "Main Course": [
+        {
+          "name": "Maharashtrian Thali",
+          "price": 180,
+          "description": "Complete meal with 4 vegetables, dal, rice, chapati, pickle and papad"
+        },
+        {
+          "name": "Punjabi Thali",
+          "price": 200,
+          "description": "Butter chicken alternative with paneer, dal makhani and naan"
+        },
+        {
+          "name": "Dal Fry",
+          "price": 110,
+          "description": "Tempered lentil curry"
+        },
+        {
+          "name": "Paneer Butter Masala",
+          "price": 170,
+          "description": "Cottage cheese in rich tomato gravy"
+        },
+        {
+          "name": "Veg Kolhapuri",
+          "price": 170,
+          "description": "Spicy mixed vegetable curry"
+        },
+        {
+          "name": "Palak Paneer",
+          "price": 160,
+          "description": "Cottage cheese in spinach gravy"
+        },
+        {
+          "name": "Chana Masala",
+          "price": 130,
+          "description": "Spicy chickpea curry"
+        },
+        {
+          "name": "Vegetable Biryani",
+          "price": 150,
+          "description": "Fragrant rice with mixed vegetables"
+        }
+      ],
+      "Rice Dishes": [
+        {
+          "name": "Veg Pulao",
+          "price": 130,
+          "description": "Fragrant basmati rice with vegetables"
+        },
+        {
+          "name": "Jeera Rice",
+          "price": 110,
+          "description": "Cumin flavored rice"
+        }
+      ]
+    },
+    "snacks": {
+      "Starters": [
+        {
+          "name": "Paneer Tikka",
+          "price": 190,
+          "description": "Grilled cottage cheese cubes"
+        },
+        {
+          "name": "Veg Manchurian",
+          "price": 140,
+          "description": "Fried vegetable balls in tangy sauce"
+        },
+        {
+          "name": "French Fries",
+          "price": 90,
+          "description": "Crispy potato fries"
+        }
+      ],
+      "Main Course": [
+        {
+          "name": "Grilled Cheese Sandwich",
+          "price": 90,
+          "description": "Toasted bread with melted cheese"
+        },
+        {
+          "name": "Veg Club Sandwich",
+          "price": 120,
+          "description": "Three-layered sandwich with veggies"
+        },
+        {
+          "name": "Pav Bhaji",
+          "price": 100,
+          "description": "Spicy vegetable mash with bread rolls"
+        },
+        {
+          "name": "Masala Dosa",
+          "price": 110,
+          "description": "Crispy rice crepe with potato filling"
+        },
+        {
+          "name": "Uttapam",
+          "price": 95,
+          "description": "Savory rice pancake with toppings"
+        },
+        {
+          "name": "Idli Sambar",
+          "price": 80,
+          "description": "Steamed rice cakes with lentil stew"
+        },
+        {
+          "name": "Vada Pav",
+          "price": 40,
+          "description": "Spicy potato fritter in bread roll"
+        }
+      ],
+      "Beverages": [
+        {
+          "name": "Mango Lassi",
+          "price": 60,
+          "description": "Sweet yogurt mango drink"
+        },
+        {
+          "name": "Cold Coffee",
+          "price": 70,
+          "description": "Iced coffee with cream"
+        }
+      ]
+    },
+    "dinner": {
+      "Starters": [
+        {
+          "name": "Veg Seekh Kebab",
+          "price": 160,
+          "description": "Grilled vegetable kebabs"
+        },
+        {
+          "name": "Crispy Corn",
+          "price": 130,
+          "description": "Fried corn with spices"
+        },
+        {
+          "name": "Paneer 65",
+          "price": 180,
+          "description": "Spicy fried paneer cubes"
+        }
+      ],
+      "Main Course": [
+        {
+          "name": "Veg Angara",
+          "price": 190,
+          "description": "Smoked vegetable curry"
+        },
+        {
+          "name": "Paneer Tava Masala",
+          "price": 190,
+          "description": "Pan-fried cottage cheese in gravy"
+        },
+        {
+          "name": "Dal Makhani",
+          "price": 150,
+          "description": "Creamy black lentil curry"
+        },
+        {
+          "name": "Malai Kofta",
+          "price": 180,
+          "description": "Vegetable dumplings in creamy sauce"
+        },
+        {
+          "name": "Kadai Paneer",
+          "price": 185,
+          "description": "Cottage cheese in bell pepper gravy"
+        },
+        {
+          "name": "Navratan Korma",
+          "price": 175,
+          "description": "Mixed vegetables in creamy sauce"
+        },
+        {
+          "name": "Bhindi Masala",
+          "price": 140,
+          "description": "Spicy okra stir-fry"
+        }
+      ],
+      "Chinese": [
+        {
+          "name": "Veg Fried Rice",
+          "price": 140,
+          "description": "Stir-fried rice with vegetables"
+        },
+        {
+          "name": "Hakka Noodles",
+          "price": 150,
+          "description": "Stir-fried noodles with veggies"
+        }
+      ]
+    },
+    "all_day": {
+      "Desserts": [
+        {
+          "name": "Gulab Jamun",
+          "price": 50,
+          "description": "Fried milk balls in sugar syrup"
+        },
+        {
+          "name": "Shrikhand",
+          "price": 60,
+          "description": "Sweet strained yogurt"
+        }
+      ],
+      "Beverages": [
+        {
+          "name": "Masala Chaas",
+          "price": 30,
+          "description": "Spiced buttermilk"
+        },
+        {
+          "name": "Fresh Lime Soda",
+          "price": 35,
+          "description": "Sweet or salty lime drink"
+        }
+      ]
+    }
+  },
+  "time_ranges": {
+    "breakfast": {"start": 6, "end": 11},
+    "lunch": {"start": 11, "end": 16},
+    "snacks": {"start": 16, "end": 20},
+    "dinner": {"start": 20, "end": 23}
+  }
+}

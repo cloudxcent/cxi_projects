@@ -1,0 +1,7 @@
+2025-07-20 13:54:40,382 - HTTP Request: POST https://azurevr.openai.azure.com/openai/files?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 13:54:41,932 - HTTP Request: POST https://azurevr.openai.azure.com/openai/files?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 13:54:42,798 - HTTP Request: POST https://azurevr.openai.azure.com/openai/vector_stores?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 13:54:42,989 - HTTP Request: GET https://azurevr.openai.azure.com/openai/vector_stores/vs_CzfveFdfjnkNKz7hzw26sjP5?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 13:54:46,315 - HTTP Request: GET https://azurevr.openai.azure.com/openai/vector_stores/vs_CzfveFdfjnkNKz7hzw26sjP5?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 13:54:46,500 - HTTP Request: POST https://azurevr.openai.azure.com/openai/assistants?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
+2025-07-20 13:54:46,645 - HTTP Request: POST https://azurevr.openai.azure.com/openai/threads?api-version=2024-05-01-preview "HTTP/1.1 200 OK"
