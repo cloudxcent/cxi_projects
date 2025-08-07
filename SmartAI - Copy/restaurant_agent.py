@@ -4,7 +4,6 @@ import time
 import json
 import string
 from datetime import datetime, timedelta, timezone
-from dotenv import load_dotenv
 from openai import AzureOpenAI
 import azure.cognitiveservices.speech as speechsdk
 from num2words import num2words
@@ -13,24 +12,41 @@ from num2words import num2words
 from restaurant_menu_helper import RestaurantMenuHelper
 from restaurant_db_helper_normalized import RestaurantDB
 
-# ==== Define what "main course" means ====
-MAIN_COURSE_CATEGORY_KEYWORDS = {
-    "main", "indian", "sabzi", "rice", "noodle", "pasta",
-    "bread", "roti", "dal", "curry", "biryani", "chinese",
-    "continental", "south indian"
-}
-EXCLUDE_CATEGORY_KEYWORDS = {"starter", "dessert", "soup", "appetizer", "salad"}
+# === Load configuration from JSON file ===
+def load_config(config_file="config.json"):
+    """Load configuration from JSON file"""
+    try:
+        # Get the current directory where the script is located
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_dir, config_file)
+        
+        with open(config_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Configuration file '{config_file}' not found in {current_dir}. Please create it with proper settings.")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in configuration file: {e}")
 
-# === Load environment variables ===
-load_dotenv()
-OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
-OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
-OPENAI_DEPLOY = os.getenv("AZURE_OPENAI_DEPLOYMENT")
-OPENAI_VERSION = os.getenv("AZURE_OPENAI_VERSION", "2024-05-01-preview")
-SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")
-SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
-assert all([OPENAI_KEY, OPENAI_ENDPOINT, OPENAI_DEPLOY, OPENAI_VERSION]), "OpenAI vars missing"
-assert all([SPEECH_KEY, SPEECH_REGION]), "Speech vars missing"
+# Load configuration
+config = load_config()
+
+# ==== Define what "main course" means from config ====
+MAIN_COURSE_CATEGORY_KEYWORDS = set(config["menu_categories"]["main_course_keywords"])
+EXCLUDE_CATEGORY_KEYWORDS = set(config["menu_categories"]["exclude_keywords"])
+
+# === Extract configuration values ===
+OPENAI_KEY = config["azure_openai"]["api_key"]
+OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
+OPENAI_DEPLOY = config["azure_openai"]["deployment"]
+OPENAI_VERSION = config["azure_openai"]["version"]
+SPEECH_KEY = config["azure_speech"]["key"]
+SPEECH_REGION = config["azure_speech"]["region"]
+
+# Validate required configuration
+assert all([OPENAI_KEY, OPENAI_ENDPOINT, OPENAI_DEPLOY, OPENAI_VERSION]), "OpenAI configuration missing in config.json"
+assert all([SPEECH_KEY, SPEECH_REGION]), "Speech configuration missing in config.json"
+assert OPENAI_KEY != "YOUR_AZURE_OPENAI_KEY", "Please update azure_openai.api_key in config.json"
+assert SPEECH_KEY != "YOUR_AZURE_SPEECH_KEY", "Please update azure_speech.key in config.json"
 
 # === Initialize clients ===
 client = AzureOpenAI(
@@ -40,13 +56,15 @@ client = AzureOpenAI(
 )
 
 speech_cfg = speechsdk.SpeechConfig(subscription=SPEECH_KEY, region=SPEECH_REGION)
-speech_cfg.speech_synthesis_voice_name = "en-IN-NeerjaNeural"
+speech_cfg.speech_synthesis_voice_name = config["azure_speech"]["voice_name"]
 print("✔ Services initialized")
 
 mic_audio_cfg = speechsdk.audio.AudioConfig(use_default_microphone=True)
 speaker_audio_cfg = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
 
-LOG_FILE = "restaurant_assistant.log"
+# Get current directory for log file
+current_dir = os.path.dirname(os.path.abspath(__file__))
+LOG_FILE = os.path.join(current_dir, config["files"]["log_file"])
 
 # === Intent Classification Constants ===
 INTENT_ORDER = "place_order"
@@ -168,7 +186,7 @@ def tts(text: str):
         ssml = (
             f"""<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-IN'>
                 <voice name='{speech_cfg.speech_synthesis_voice_name}'>
-                <prosody rate='1.2'>{text}</prosody>
+                <prosody rate='{config["speech_settings"]["prosody_rate"]}'>{text}</prosody>
                 </voice>
                 </speak>"""
         )
@@ -217,7 +235,11 @@ def listen() -> str | None:
 
 # === Menu Functions ===
 def load_menu(path: str) -> dict:
-    with open(path, "r", encoding="utf-8") as f:
+    # Get the current directory where the script is located
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    menu_path = os.path.join(current_dir, path)
+    
+    with open(menu_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def get_ist_time():
@@ -287,8 +309,12 @@ def get_category_items(menu_data: dict, category_type: str, meal_period: str):
 # === AI Assistant Functions ===
 def create_vector_store(files: list[str], store_name="RestaurantStore") -> str:
     file_ids = []
+    # Get the current directory where the script is located
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
     for path in files:
-        with open(path, "rb") as f:
+        file_path = os.path.join(current_dir, path)
+        with open(file_path, "rb") as f:
             fid = client.files.create(file=f, purpose="assistants").id
             file_ids.append(fid)
             print(f"✔ Uploaded {path}")
@@ -820,6 +846,26 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
 
 # === Main Conversation Flow ===
 if __name__ == "__main__":
+    try:
+        # Validate configuration on startup
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_dir, "config.json")
+        
+        if not os.path.exists(config_path):
+            print("❌ Configuration file 'config.json' not found!")
+            print(f"Please create config.json in {current_dir} with proper Azure OpenAI and Speech service credentials.")
+            exit(1)
+            
+        # Test that configuration is properly loaded
+        print(f"✔ Configuration loaded successfully")
+        print(f"✔ Using menu file: {config['files']['menu_file']}")
+        print(f"✔ Using log file: {config['files']['log_file']}")
+        
+    except (FileNotFoundError, ValueError, KeyError) as e:
+        print(f"❌ Configuration error: {e}")
+        print("Please check your config.json file and ensure all required fields are present.")
+        exit(1)
+    
     if not os.path.exists(LOG_FILE):
         log_session_start(LOG_FILE)
     else:
@@ -831,11 +877,19 @@ if __name__ == "__main__":
                 log_session_start(LOG_FILE)
 
     try:
-        menu_data = load_menu("restaurant_menu.json")
-        menu_helper = RestaurantMenuHelper("restaurant_menu.json")
-        db_helper = RestaurantDB(host="localhost", user="root", password="jshaikh@1234", database="restaurant_db")
+        menu_data = load_menu(config["files"]["menu_file"])
+        menu_helper = RestaurantMenuHelper(os.path.join(current_dir, config["files"]["menu_file"]))
+        db_helper = RestaurantDB(
+            host=config["database"]["host"],
+            user=config["database"]["user"],
+            password=config["database"]["password"],
+            database=config["database"]["database"]
+        )
         
-        vs_id = create_vector_store(["restaurant_menu.json", "restaurant_info.txt"])
+        vs_id = create_vector_store([
+            config["files"]["menu_file"], 
+            config["files"]["restaurant_info"]
+        ])
         assistant = build_assistant(vs_id)
         thread = client.beta.threads.create()
 
@@ -1048,5 +1102,16 @@ if __name__ == "__main__":
 
             if exit_flag:
                 break
+    except FileNotFoundError as e:
+        if "config.json" in str(e):
+            print("❌ Configuration file not found. Please create config.json with proper settings.")
+        else:
+            print(f"❌ Required file not found: {e}")
+    except KeyError as e:
+        print(f"❌ Missing configuration key: {e}")
+        print("Please check your config.json file for missing required fields.")
+    except Exception as e:
+        print(f"❌ Unexpected error: {e}")
+        log_conversation("System", f"Unexpected error: {e}")
     finally:
         log_session_end(LOG_FILE)

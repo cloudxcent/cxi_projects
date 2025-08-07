@@ -4,3 +4,4 @@ httpx==0.27.2             # avoids proxies argument crash in AzureOpenAI[25][34]
 azure-cognitiveservices-speech   # Speech SDK for STT / TTS[2][11]
 python-dotenv             # loads .env secrets easily[3][12]
 num2words
+rapidfuzz

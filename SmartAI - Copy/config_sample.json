@@ -1,0 +1,51 @@
+{
+  "_readme": "This is the configuration file for the Restaurant AI Assistant. Please update the values below with your actual credentials and settings.",
+  "_instructions": {
+    "azure_openai": "Get these values from your Azure OpenAI service in the Azure portal",
+    "azure_speech": "Get these values from your Azure Speech service in the Azure portal",
+    "database": "Update with your MySQL database connection details",
+    "files": "Paths to menu, restaurant info, and log files (relative to script location)",
+    "menu_categories": "Keywords used to classify menu items (can be customized)"
+  },
+  
+  "azure_openai": {
+    "api_key": "YOUR_AZURE_OPENAI_KEY",
+    "endpoint": "YOUR_AZURE_OPENAI_ENDPOINT",
+    "deployment": "YOUR_AZURE_OPENAI_DEPLOYMENT",
+    "version": "2024-05-01-preview"
+  },
+  
+  "azure_speech": {
+    "key": "YOUR_AZURE_SPEECH_KEY",
+    "region": "YOUR_AZURE_SPEECH_REGION",
+    "voice_name": "en-IN-NeerjaNeural"
+  },
+  
+  "database": {
+    "host": "localhost",
+    "user": "root", 
+    "password": "YOUR_DATABASE_PASSWORD",
+    "database": "restaurant_db"
+  },
+  
+  "files": {
+    "menu_file": "restaurant_menu.json",
+    "restaurant_info": "restaurant_info.txt",
+    "log_file": "restaurant_assistant.log"
+  },
+  
+  "menu_categories": {
+    "main_course_keywords": [
+      "main", "indian", "sabzi", "rice", "noodle", "pasta",
+      "bread", "roti", "dal", "curry", "biryani", "chinese",
+      "continental", "south indian"
+    ],
+    "exclude_keywords": [
+      "starter", "dessert", "soup", "appetizer", "salad"
+    ]
+  },
+  
+  "speech_settings": {
+    "prosody_rate": "1.2"
+  }
+}
