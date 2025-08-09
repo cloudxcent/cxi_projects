@@ -11,7 +11,7 @@ class RestaurantDB:
 
     def place_order(self, table_no, items, total_amount):
         """
-        Place an order and insert each item.
+        Place a new order and insert each item.
         """
         try:
             self.conn.start_transaction()
@@ -36,21 +36,71 @@ class RestaurantDB:
             print("Error placing order:", e)
             return None
 
+    def add_items_to_order(self, order_id, items, additional_amount):
+        """
+        Add items to an existing order and update the total amount.
+        """
+        try:
+            self.conn.start_transaction()
+            # Update the total_amount in the orders table
+            self.cursor.execute(
+                """UPDATE orders SET total_amount = total_amount + %s WHERE order_id = %s""",
+                (additional_amount, order_id)
+            )
+            if self.cursor.rowcount == 0:
+                raise Exception("Order ID not found")
+
+            # Insert new items
+            for item in items:
+                self.cursor.execute(
+                    """INSERT INTO order_items (order_id, item_name, quantity, price)
+                       VALUES (%s, %s, %s, %s)""",
+                    (order_id, item["name"], item["qty"], item["price"])
+                )
+            
+            # Update the bill_amount in the billings table
+            self.cursor.execute(
+                """UPDATE billings SET bill_amount = bill_amount + %s WHERE order_id = %s""",
+                (additional_amount, order_id)
+            )
+            if self.cursor.rowcount == 0:
+                raise Exception("Billing record not found for order ID")
+
+            self.conn.commit()
+            return True
+        except Exception as e:
+            self.conn.rollback()
+            print("Error adding items to order:", e)
+            return False
+
     def add_billing(self, order_id, bill_amount, paid=False):
         """
-        Create billing record.
+        Create or update a billing record.
         """
         try:
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            self.cursor.execute(
-                """INSERT INTO billings (order_id, bill_amount, paid, bill_time)
-                   VALUES (%s, %s, %s, %s)""",
-                (order_id, bill_amount, int(paid), now)
-            )
+            # Check if a billing record already exists
+            self.cursor.execute("SELECT bill_id FROM billings WHERE order_id=%s", (order_id,))
+            existing_bill = self.cursor.fetchone()
+            
+            if existing_bill:
+                # Update existing bill
+                self.cursor.execute(
+                    """UPDATE billings SET bill_amount=%s, bill_time=%s, paid=%s
+                       WHERE order_id=%s""",
+                    (bill_amount, now, int(paid), order_id)
+                )
+            else:
+                # Create new bill
+                self.cursor.execute(
+                    """INSERT INTO billings (order_id, bill_amount, paid, bill_time)
+                       VALUES (%s, %s, %s, %s)""",
+                    (order_id, bill_amount, int(paid), now)
+                )
             self.conn.commit()
-            return self.cursor.lastrowid
+            return self.cursor.lastrowid if not existing_bill else existing_bill["bill_id"]
         except Exception as e:
-            print("Error adding billing:", e)
+            print("Error adding/updating billing:", e)
             return None
 
     def get_order_status(self, order_id):
@@ -78,6 +128,11 @@ class RestaurantDB:
     def get_order_items(self, order_id):
         self.cursor.execute("SELECT * FROM order_items WHERE order_id=%s", (order_id,))
         return self.cursor.fetchall()
+
+    def get_order_total(self, order_id):
+        self.cursor.execute("SELECT total_amount FROM orders WHERE order_id=%s", (order_id,))
+        row = self.cursor.fetchone()
+        return row["total_amount"] if row else None
 
     def close(self):
         self.cursor.close()
