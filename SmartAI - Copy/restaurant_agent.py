@@ -4,6 +4,7 @@ import time
 import json
 import string
 from datetime import datetime, timedelta, timezone
+from dotenv import load_dotenv
 from openai import AzureOpenAI
 import azure.cognitiveservices.speech as speechsdk
 from num2words import num2words
@@ -12,41 +13,24 @@ from num2words import num2words
 from restaurant_menu_helper import RestaurantMenuHelper
 from restaurant_db_helper_normalized import RestaurantDB
 
-# === Load configuration from JSON file ===
-def load_config(config_file="config.json"):
-    """Load configuration from JSON file"""
-    try:
-        # Get the current directory where the script is located
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(current_dir, config_file)
-        
-        with open(config_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Configuration file '{config_file}' not found in {current_dir}. Please create it with proper settings.")
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in configuration file: {e}")
+# ==== Define what "main course" means ====
+MAIN_COURSE_CATEGORY_KEYWORDS = {
+    "main", "indian", "sabzi", "rice", "noodle", "pasta",
+    "bread", "roti", "dal", "curry", "biryani", "chinese",
+    "continental", "south indian"
+}
+EXCLUDE_CATEGORY_KEYWORDS = {"starter", "dessert", "soup", "appetizer", "salad"}
 
-# Load configuration
-config = load_config()
-
-# ==== Define what "main course" means from config ====
-MAIN_COURSE_CATEGORY_KEYWORDS = set(config["menu_categories"]["main_course_keywords"])
-EXCLUDE_CATEGORY_KEYWORDS = set(config["menu_categories"]["exclude_keywords"])
-
-# === Extract configuration values ===
-OPENAI_KEY = config["azure_openai"]["api_key"]
-OPENAI_ENDPOINT = config["azure_openai"]["endpoint"]
-OPENAI_DEPLOY = config["azure_openai"]["deployment"]
-OPENAI_VERSION = config["azure_openai"]["version"]
-SPEECH_KEY = config["azure_speech"]["key"]
-SPEECH_REGION = config["azure_speech"]["region"]
-
-# Validate required configuration
-assert all([OPENAI_KEY, OPENAI_ENDPOINT, OPENAI_DEPLOY, OPENAI_VERSION]), "OpenAI configuration missing in config.json"
-assert all([SPEECH_KEY, SPEECH_REGION]), "Speech configuration missing in config.json"
-assert OPENAI_KEY != "YOUR_AZURE_OPENAI_KEY", "Please update azure_openai.api_key in config.json"
-assert SPEECH_KEY != "YOUR_AZURE_SPEECH_KEY", "Please update azure_speech.key in config.json"
+# === Load environment variables ===
+load_dotenv()
+OPENAI_KEY = os.getenv("AZURE_OPENAI_KEY")
+OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+OPENAI_DEPLOY = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+OPENAI_VERSION = os.getenv("AZURE_OPENAI_VERSION", "2024-05-01-preview")
+SPEECH_KEY = os.getenv("AZURE_SPEECH_KEY")
+SPEECH_REGION = os.getenv("AZURE_SPEECH_REGION")
+assert all([OPENAI_KEY, OPENAI_ENDPOINT, OPENAI_DEPLOY, OPENAI_VERSION]), "OpenAI vars missing"
+assert all([SPEECH_KEY, SPEECH_REGION]), "Speech vars missing"
 
 # === Initialize clients ===
 client = AzureOpenAI(
@@ -56,15 +40,14 @@ client = AzureOpenAI(
 )
 
 speech_cfg = speechsdk.SpeechConfig(subscription=SPEECH_KEY, region=SPEECH_REGION)
-speech_cfg.speech_synthesis_voice_name = config["azure_speech"]["voice_name"]
+speech_cfg.speech_synthesis_voice_name = "en-IN-NeerjaNeural"
 print("✔ Services initialized")
 
 mic_audio_cfg = speechsdk.audio.AudioConfig(use_default_microphone=True)
 speaker_audio_cfg = speechsdk.audio.AudioOutputConfig(use_default_speaker=True)
 
-# Get current directory for log file
-current_dir = os.path.dirname(os.path.abspath(__file__))
-LOG_FILE = os.path.join(current_dir, config["files"]["log_file"])
+LOG_FILE = "restaurant_assistant.log"
+WAKE_WORD = "waiter"
 
 # === Intent Classification Constants ===
 INTENT_ORDER = "place_order"
@@ -77,6 +60,7 @@ INTENT_PRICE = "ask_price"
 INTENT_DESCRIPTION = "ask_description"
 INTENT_STARTER = "ask_starter"
 INTENT_DESSERT = "ask_dessert"
+INTENT_CANCEL = "cancel_order"  # New intent for cancellation
 
 # === New Session Logging Functions ===
 def get_current_date_str():
@@ -130,6 +114,7 @@ def classify_intent(text: str) -> str:
     - general_question: Any other restaurant-related question
     - ask_starter: When user asks about starters
     - ask_dessert: When user asks about desserts
+    - cancel_order: When user wants to cancel an existing order
     
     Return ONLY the intent name, nothing else."""
     
@@ -148,7 +133,7 @@ def classify_intent(text: str) -> str:
             INTENT_ORDER, INTENT_MENU, INTENT_STATUS, 
             INTENT_GENERAL, INTENT_GREETING, INTENT_GOODBYE,
             INTENT_PRICE, INTENT_DESCRIPTION, INTENT_STARTER,
-            INTENT_DESSERT
+            INTENT_DESSERT, INTENT_CANCEL
         } else INTENT_GENERAL
     except Exception as e:
         print(f"Intent classification error: {e}")
@@ -186,7 +171,7 @@ def tts(text: str):
         ssml = (
             f"""<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='en-IN'>
                 <voice name='{speech_cfg.speech_synthesis_voice_name}'>
-                <prosody rate='{config["speech_settings"]["prosody_rate"]}'>{text}</prosody>
+                <prosody rate='1.2'>{text}</prosody>
                 </voice>
                 </speak>"""
         )
@@ -226,7 +211,7 @@ def listen() -> str | None:
         speech_config=speech_cfg,
         audio_config=mic_audio_cfg
     )
-    print("🎙️ Speak now...")
+    print("🎙️ Listening for 'Waiter' or commands...")
     res = recog.recognize_once_async().get()
     if res.reason == speechsdk.ResultReason.RecognizedSpeech:
         return res.text
@@ -235,11 +220,7 @@ def listen() -> str | None:
 
 # === Menu Functions ===
 def load_menu(path: str) -> dict:
-    # Get the current directory where the script is located
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    menu_path = os.path.join(current_dir, path)
-    
-    with open(menu_path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def get_ist_time():
@@ -309,12 +290,8 @@ def get_category_items(menu_data: dict, category_type: str, meal_period: str):
 # === AI Assistant Functions ===
 def create_vector_store(files: list[str], store_name="RestaurantStore") -> str:
     file_ids = []
-    # Get the current directory where the script is located
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    
     for path in files:
-        file_path = os.path.join(current_dir, path)
-        with open(file_path, "rb") as f:
+        with open(path, "rb") as f:
             fid = client.files.create(file=f, purpose="assistants").id
             file_ids.append(fid)
             print(f"✔ Uploaded {path}")
@@ -341,8 +318,7 @@ def build_assistant(vs_id: str):
            - Thali serves 1, Biryani serves 2-3, Pasta serves 1-2
         5. Keep responses short (1-2 sentences) but friendly
         6. Remember previous recommendations if asked again
-        7. Never mention you're an AI
-         """,
+        7. Never mention you're an AI""",
         model=OPENAI_DEPLOY,
         tools=[{"type": "file_search"}],
         tool_resources={"file_search": {"vector_store_ids": [vs_id]}}
@@ -515,7 +491,7 @@ def process_main_courses(menu_data: dict, meal_period: str, collected_orders: li
                         "qty": quantity,
                         "price": dish_data["price"]
                     })
-                    speak(f"Added {quantity} {dish_data['name']} to your order.")
+                    speak(f"✅ {quantity} {dish_data['name']} has been added to your order.")
                 else:
                     speak(f"Sorry, we don't have {dish_name_raw} in our main courses.")
             return collected_orders, False, context
@@ -527,18 +503,15 @@ def process_starters(menu_data: dict, meal_period: str, collected_orders: list, 
     if not items:
         return collected_orders, False, context
 
-    # 1. SHOW MENU IMMEDIATELY (NO SEPARATE CONFIRMATION)
     speak_items = []
     for category in categories:
         items = menu_data["menu"][meal_period].get(category, []) + \
                 menu_data["menu"]["all_day"].get(category, [])
         speak_items.extend(item["name"] for item in items)
     
-    # Format: "Paneer Tikka, Veg Manchurian, and French Fries"
     menu_text = ", ".join(speak_items[:-1]) + f", and {speak_items[-1]}" if len(speak_items) > 1 else speak_items[0]
     speak(f"We have {menu_text}. Would you like to order any starters?")
 
-    # 2. SINGLE INPUT HANDLING
     while True:
         user_input = listen()
         if not user_input:
@@ -552,7 +525,6 @@ def process_starters(menu_data: dict, meal_period: str, collected_orders: list, 
             speak("No problem, skipping starters.")
             return collected_orders, False, context
 
-        # Process order directly
         structured_orders = extract_structured_order(user_input)
         if structured_orders:
             for item in structured_orders:
@@ -563,7 +535,9 @@ def process_starters(menu_data: dict, meal_period: str, collected_orders: list, 
                         "qty": item.get("quantity", 1),
                         "price": dish_data["price"]
                     })
-                    speak(f"Added {item.get('quantity', 1)} {dish_data['name']}.")
+                    speak(f"✅ {item.get('quantity', 1)} {dish_data['name']} has been added to your order.")
+                else:
+                    speak(f"Sorry, we don't have {item['name']} in our starters.")
             return collected_orders, False, context
         else:
             speak("Please specify like: '1 Paneer Tikka' or say 'no' to skip")
@@ -573,18 +547,15 @@ def process_desserts(menu_data: dict, meal_period: str, collected_orders: list, 
     if not items:
         return collected_orders, False, context
 
-    # 1. SHOW MENU AND PROMPT IN ONE QUESTION
     speak_items = []
     for category in categories:
         items = menu_data["menu"][meal_period].get(category, []) + \
                 menu_data["menu"]["all_day"].get(category, [])
         speak_items.extend(item["name"] for item in items)
     
-    # Format: "Gulab Jamun, Ice Cream, and Chocolate Cake"
     menu_text = ", ".join(speak_items[:-1]) + f", and {speak_items[-1]}" if len(speak_items) > 1 else speak_items[0]
     speak(f"We have {menu_text}. Would you like to order any desserts?")
 
-    # 2. SINGLE INPUT HANDLING
     while True:
         user_input = listen()
         if not user_input:
@@ -598,7 +569,6 @@ def process_desserts(menu_data: dict, meal_period: str, collected_orders: list, 
             speak("No problem, skipping desserts.")
             return collected_orders, False, context
 
-        # Process order directly
         structured_orders = extract_structured_order(user_input)
         if structured_orders:
             for item in structured_orders:
@@ -609,7 +579,9 @@ def process_desserts(menu_data: dict, meal_period: str, collected_orders: list, 
                         "qty": item.get("quantity", 1),
                         "price": dish_data["price"]
                     })
-                    speak(f"Added {item.get('quantity', 1)} {dish_data['name']}.")
+                    speak(f"✅ {item.get('quantity', 1)} {dish_data['name']} has been added to your order.")
+                else:
+                    speak(f"Sorry, we don't have {item['name']} in our desserts.")
             return collected_orders, False, context
         else:
             speak("Please specify like: '2 Gulab Jamun' or say 'no' to skip")
@@ -642,7 +614,7 @@ def handle_direct_order(user_input: str, meal_period: str, collected_orders: lis
                 "qty": quantity,
                 "price": dish_data["price"]
             })
-            speak(f"Added {quantity} {dish_data['name']} to your order.")
+            speak(f"✅ {quantity} {dish_data['name']} has been added to your order.")
         else:
             speak(f"Sorry, we don't have {dish_name_raw} on our menu right now.")
     return collected_orders, False, context
@@ -675,7 +647,6 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
         if exit_flag:
             return collected_orders, True, context
             
-        # Ask about main courses after starters
         speak("Would you like to order any main course dishes now?")
         while True:
             user_input = listen()
@@ -701,7 +672,6 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
                 context.append(f"Assistant: {response}")
                 speak("Would you like to see our main courses?")
         
-        # Ask about desserts
         speak("Would you like to finish your meal with some desserts?")
         while True:
             user_input = listen()
@@ -732,7 +702,6 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
         if exit_flag:
             return collected_orders, True, context
             
-        # Ask about main courses after desserts
         speak("Would you like to order any main course dishes now?")
         while True:
             user_input = listen()
@@ -758,7 +727,6 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
                 context.append(f"Assistant: {response}")
                 speak("Would you like to see our main courses?")
         
-        # Ask about starters after main courses
         speak("Would you like to start your meal with some starters?")
         while True:
             user_input = listen()
@@ -785,12 +753,10 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
                 speak("Would you like any starters?")
                 
     elif intent == INTENT_MENU:
-        # First show main courses
         collected_orders, exit_flag, context = process_main_courses(menu_data, meal_period, collected_orders, context)
         if exit_flag:
             return collected_orders, True, context
             
-        # Then ask about starters
         speak("Would you like to start your meal with some starters while your main course is being prepared?")
         while True:
             user_input = listen()
@@ -816,7 +782,6 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
                 context.append(f"Assistant: {response}")
                 speak("Would you like any starters?")
         
-        # Finally ask about desserts
         speak("Would you like to finish your meal with some desserts?")
         while True:
             user_input = listen()
@@ -846,26 +811,6 @@ def handle_dynamic_ordering_flow(user_input: str, menu_data: dict, meal_period: 
 
 # === Main Conversation Flow ===
 if __name__ == "__main__":
-    try:
-        # Validate configuration on startup
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        config_path = os.path.join(current_dir, "config.json")
-        
-        if not os.path.exists(config_path):
-            print("❌ Configuration file 'config.json' not found!")
-            print(f"Please create config.json in {current_dir} with proper Azure OpenAI and Speech service credentials.")
-            exit(1)
-            
-        # Test that configuration is properly loaded
-        print(f"✔ Configuration loaded successfully")
-        print(f"✔ Using menu file: {config['files']['menu_file']}")
-        print(f"✔ Using log file: {config['files']['log_file']}")
-        
-    except (FileNotFoundError, ValueError, KeyError) as e:
-        print(f"❌ Configuration error: {e}")
-        print("Please check your config.json file and ensure all required fields are present.")
-        exit(1)
-    
     if not os.path.exists(LOG_FILE):
         log_session_start(LOG_FILE)
     else:
@@ -877,76 +822,162 @@ if __name__ == "__main__":
                 log_session_start(LOG_FILE)
 
     try:
-        menu_data = load_menu(config["files"]["menu_file"])
-        menu_helper = RestaurantMenuHelper(os.path.join(current_dir, config["files"]["menu_file"]))
-        db_helper = RestaurantDB(
-            host=config["database"]["host"],
-            user=config["database"]["user"],
-            password=config["database"]["password"],
-            database=config["database"]["database"]
-        )
+        menu_data = load_menu("restaurant_menu.json")
+        menu_helper = RestaurantMenuHelper("restaurant_menu.json")
+        db_helper = RestaurantDB(host="localhost", user="root", password="jshaikh@1234", database="restaurant_db")
         
-        vs_id = create_vector_store([
-            config["files"]["menu_file"], 
-            config["files"]["restaurant_info"]
-        ])
+        vs_id = create_vector_store(["restaurant_menu.json", "restaurant_info.txt"])
         assistant = build_assistant(vs_id)
         thread = client.beta.threads.create()
 
         current_time = get_ist_time()
         meal_period = get_meal_period(menu_data)
-        greeting = f"Welcome to Nisarg Hotel! It's currently {current_time.strftime('%I:%M %p')} and we're serving our {meal_period} menu."
-        speak(greeting)
-
-        speak("How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.")
-
+        greeting = f"Welcome to Nisarg Hotel! we're serving our {meal_period} menu."
         collected_orders = []
         exit_flag = False
         order_placed = False
         current_order_id = None
         conversation_context = []
+        is_active = False
 
         while True:
-            if order_placed:
-                speak(f"Your order number is {current_order_id}. Please let me know if you need anything else.")
-                
-                while True:
-                    user_input = listen()
-                    if not user_input:
-                        continue
-                        
-                    print(f"👤: {user_input}")
-                    log_conversation("User", user_input)
-                    conversation_context.append(f"User: {user_input}")
-                    cmd = user_input.lower().strip()
-
-                    intent = classify_intent(user_input)
-                    
-                    if intent == INTENT_STATUS:
-                        check_order_status(current_order_id)
-                        continue
-                    elif intent == INTENT_GOODBYE:
-                        speak("Thank you for visiting Nisarg Hotel! We hope to see you again soon.")
-                        exit_flag = True
-                        break
-                    else:
-                        response = get_ai_response(thread, assistant, user_input, "\n".join(conversation_context[-3:]))
-                        speak(response)
-                        conversation_context.append(f"Assistant: {response}")
-                
-                if exit_flag:
-                    break
-                continue
-
             user_input = listen()
             if not user_input:
-                speak("I didn't hear your request. Could you please repeat that?")
                 continue
                 
             print(f"👤: {user_input}")
             log_conversation("User", user_input)
             conversation_context.append(f"User: {user_input}")
             cmd = user_input.lower().strip()
+
+            if not is_active and WAKE_WORD not in cmd:
+                continue
+
+            if WAKE_WORD in cmd:
+                is_active = True
+                if cmd.strip() == WAKE_WORD:
+                    speak("Yes, how can I help you?")
+                    continue
+                else:
+                    user_input = re.sub(rf'^{WAKE_WORD}\s*,\s*|^{WAKE_WORD}\s+', '', cmd, flags=re.IGNORECASE).strip()
+                    if not user_input:
+                        speak("Yes, how can I help you?")
+                        continue
+                    conversation_context.append(f"User: {user_input}")
+
+            if not is_active:
+                continue
+
+            if order_placed:
+                intent = classify_intent(user_input)
+                
+                if intent == INTENT_CANCEL:
+                    if current_order_id:
+                        try:
+                            success = db_helper.update_order_status(current_order_id, "cancelled")
+                            if success:
+                                speak(f"Your order number {current_order_id} has been cancelled.")
+                                conversation_context.append(f"Assistant: Your order number {current_order_id} has been cancelled.")
+                                order_placed = False
+                                current_order_id = None
+                                is_active = False
+                            else:
+                                speak("Sorry, I couldn't cancel your order. It may have already been processed.")
+                                conversation_context.append("Assistant: Sorry, I couldn't cancel your order. It may have already been processed.")
+                        except Exception as e:
+                            print(f"Error cancelling order: {e}")
+                            speak("There was an issue cancelling your order. Please try again or contact staff.")
+                            conversation_context.append("Assistant: There was an issue cancelling your order. Please try again or contact staff.")
+                    else:
+                        speak("No active order found to cancel.")
+                        conversation_context.append("Assistant: No active order found to cancel.")
+                    continue
+                elif intent == INTENT_STATUS:
+                    check_order_status(current_order_id)
+                    continue
+                elif intent == INTENT_GOODBYE:
+                    speak("Thank you for visiting Nisarg Hotel! We hope to see you again soon.")
+                    log_session_end(LOG_FILE)
+                    break
+                elif "total" in cmd or "bill" in cmd or "price" in cmd:
+                    total_amount = db_helper.get_order_total(current_order_id)
+                    if total_amount is not None:
+                        speak(f"Your total bill amount is {format_price(total_amount)}")
+                    else:
+                        speak("I couldn't retrieve your bill amount. Please ask the cashier.")
+                    continue
+                elif intent == INTENT_ORDER:
+                    collected_orders, exit_flag, conversation_context = handle_direct_order(
+                        user_input, meal_period, collected_orders, conversation_context
+                    )
+                    if exit_flag:
+                        break
+                    if collected_orders:
+                        speak("Let me confirm your additional order:")
+                        for item in collected_orders:
+                            speak(f"{item['qty']} {item['name']}")
+                        speak("Should I add these to your existing order?")
+
+                        confirm_loop = True
+                        while confirm_loop:
+                            confirm_input = listen()
+                            if not confirm_input:
+                                speak("I didn't catch that. Should I add these to your order?")
+                                continue
+                            print(f"👤: {confirm_input}")
+                            log_conversation("User", confirm_input)
+                            conversation_context.append(f"User: {confirm_input}")
+                            confirm_cmd = confirm_input.lower().strip()
+
+                            if is_negative_response(confirm_cmd):
+                                speak("No problem, I've cancelled this addition.")
+                                collected_orders = []
+                                confirm_loop = False
+                            elif "total" in confirm_cmd or "bill" in confirm_cmd or "price" in confirm_cmd:
+                                total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
+                                current_total = db_helper.get_order_total(current_order_id) or 0
+                                speak(f"This addition is {format_price(total_amount)}, making your new total {format_price(current_total + total_amount)}")
+                                speak("Should I add these to your order?")
+                            elif any(word in confirm_cmd for word in ["yes", "please", "confirm"]):
+                                try:
+                                    additional_amount = sum(item["price"] * item["qty"] for item in collected_orders)
+                                    if current_order_id:
+                                        success = db_helper.add_items_to_order(current_order_id, collected_orders, additional_amount)
+                                        if success:
+                                            speak(f"✅ Your additional items have been added to order number {current_order_id}.")
+                                            conversation_context.append(f"Assistant: ✅ Your additional items have been added to order number {current_order_id}.")
+                                        else:
+                                            speak("Apologies, there was an issue adding your items. Let me try again.")
+                                            continue
+                                    else:
+                                        total_amount = additional_amount
+                                        current_order_id = db_helper.place_order(table_no=1, items=collected_orders, total_amount=total_amount)
+                                        if current_order_id:
+                                            bill_id = db_helper.add_billing(current_order_id, total_amount, paid=False)
+                                            if bill_id:
+                                                speak(f"✅ Your order has been placed as a new order number {current_order_id}.")
+                                                conversation_context.append(f"Assistant: ✅ Your order has been placed as a new order number {current_order_id}.")
+                                            else:
+                                                speak("There was a small billing issue. Let me correct that.")
+                                                continue
+                                        else:
+                                            speak("Apologies, there was an issue placing your order. Let me try again.")
+                                            continue
+                                    collected_orders = []
+                                    order_placed = True
+                                    is_active = False
+                                    confirm_loop = False
+                                except Exception as e:
+                                    print("⚠️ Error processing additional order:", str(e))
+                                    speak("My apologies, there was an error adding your items. Let me try again.")
+                            else:
+                                speak("I didn't quite understand. Should I add these to your order?")
+                        continue
+                else:
+                    response = get_ai_response(thread, assistant, user_input, "\n".join(conversation_context[-3:]))
+                    speak(response)
+                    conversation_context.append(f"Assistant: {response}")
+                    continue
 
             intent = classify_intent(user_input)
 
@@ -955,16 +986,39 @@ if __name__ == "__main__":
                 log_session_end(LOG_FILE)
                 break
 
-            if intent == INTENT_GREETING:
-                response = "Hello! Welcome to Nisarg Hotel. How may I assist you today?"
-                speak(response)
-                conversation_context.append(f"Assistant: {response}")
+            if intent == INTENT_GREETING or cmd.strip() == WAKE_WORD:
+                speak(greeting)
+                speak("How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.")
+                conversation_context.append(f"Assistant: {greeting}")
+                conversation_context.append("Assistant: How may I help you today? You can ask about our menu, place an order, or inquire about our restaurant.")
                 continue
 
             if intent == INTENT_GENERAL or intent == INTENT_DESCRIPTION or intent == INTENT_PRICE:
                 response = get_ai_response(thread, assistant, user_input, "\n".join(conversation_context[-3:]))
                 speak(response)
                 conversation_context.append(f"Assistant: {response}")
+                continue
+
+            if intent == INTENT_CANCEL and current_order_id:
+                try:
+                    success = db_helper.update_order_status(current_order_id, "cancelled")
+                    if success:
+                        speak(f"Your order number {current_order_id} has been cancelled.")
+                        conversation_context.append(f"Assistant: Your order number {current_order_id} has been cancelled.")
+                        order_placed = False
+                        current_order_id = None
+                        is_active = False
+                    else:
+                        speak("Sorry, I couldn't cancel your order. It may have already been processed.")
+                        conversation_context.append("Assistant: Sorry, I couldn't cancel your order. It may have already been processed.")
+                except Exception as e:
+                    print(f"Error cancelling order: {e}")
+                    speak("There was an issue cancelling your order. Please try again or contact staff.")
+                    conversation_context.append("Assistant: There was an issue cancelling your order. Please try again or contact staff.")
+                continue
+            elif intent == INTENT_CANCEL:
+                speak("No active order found to cancel.")
+                conversation_context.append("Assistant: No active order found to cancel.")
                 continue
 
             if intent in [INTENT_STARTER, INTENT_DESSERT, INTENT_MENU]:
@@ -977,11 +1031,9 @@ if __name__ == "__main__":
                 if not collected_orders:
                     continue
 
-                speak("Let me confirm your complete order:")
+                speak("Let me confirm your order:")
                 for item in collected_orders:
                     speak(f"{item['qty']} {item['name']}")
-                total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
-                speak(f"The total comes to {format_price(total_amount)}")
                 speak("Should I place this order for you?")
 
                 while True:
@@ -1000,30 +1052,34 @@ if __name__ == "__main__":
                         collected_orders = []
                         break
 
+                    if "total" in confirm_cmd or "bill" in confirm_cmd or "price" in cmd:
+                        total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
+                        speak(f"The total comes to {format_price(total_amount)}")
+                        speak("Should I place this order for you?")
+                        continue
+
                     if any(word in confirm_cmd for word in ["yes", "please", "confirm"]):
                         table_no = 1
                         try:
+                            total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
                             current_order_id = db_helper.place_order(table_no, collected_orders, total_amount)
                             if current_order_id is None:
-                                speak("Apologies, there was an issue placing your order. Let me try that again.")
+                                speak("Apologies, there was an issue placing your order. Let me try again.")
                                 continue
                             bill_id = db_helper.add_billing(current_order_id, total_amount, paid=False)
                             if bill_id is None:
-                                speak("There was a small issue with the billing. Let me correct that.")
+                                speak("There was a small billing issue. Let me correct that.")
                                 continue
 
-                            response_text = (
-                                f"Your order has been placed! Your order number is {current_order_id} "
-                                f"and the total is {format_price(total_amount)}. Thank you!"
-                            )
-                            speak(response_text)
+                            speak(f"✅ Your order has been placed.")
                             collected_orders = []
                             order_placed = True
-                            conversation_context.append(f"Assistant: {response_text}")
+                            conversation_context.append(f"Assistant: ✅ Your order has been placed.")
+                            is_active = False
                             break
                         except Exception as e:
                             print("⚠️ Error processing order:", str(e))
-                            speak("My apologies, there was an issue processing your order. Let me try again.")
+                            speak("My apologies, there was an error processing your order. Let me try again.")
                     elif any(word in confirm_cmd for word in ["no", "cancel"]):
                         speak("No problem, I've cancelled this order. What would you like instead?")
                         collected_orders = []
@@ -1034,16 +1090,16 @@ if __name__ == "__main__":
                 if order_placed:
                     continue
             elif intent == INTENT_ORDER:
-                collected_orders, exit_flag, conversation_context = handle_direct_order(user_input, meal_period, collected_orders, conversation_context)
+                collected_orders, exit_flag, conversation_context = handle_direct_order(
+                    user_input, meal_period, collected_orders, conversation_context
+                )
                 if exit_flag:
                     break
 
                 if collected_orders:
-                    speak("Let me confirm your complete order:")
+                    speak("Let me confirm your order:")
                     for item in collected_orders:
                         speak(f"{item['qty']} {item['name']}")
-                    total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
-                    speak(f"That will be {format_price(total_amount)} in total")
                     speak("Should I place this order for you?")
 
                     while True:
@@ -1062,9 +1118,16 @@ if __name__ == "__main__":
                             collected_orders = []
                             break
 
+                        if "total" in confirm_cmd or "bill" in confirm_cmd or "price" in cmd:
+                            total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
+                            speak(f"The total comes to {format_price(total_amount)}")
+                            speak("Should I place this order for you?")
+                            continue
+
                         if any(word in confirm_cmd for word in ["yes", "please", "confirm"]):
                             table_no = 1
                             try:
+                                total_amount = sum(item["price"] * item["qty"] for item in collected_orders)
                                 current_order_id = db_helper.place_order(table_no, collected_orders, total_amount)
                                 if current_order_id is None:
                                     speak("Apologies, there was an issue placing your order. Let me try again.")
@@ -1074,14 +1137,11 @@ if __name__ == "__main__":
                                     speak("There was a small billing issue. Let me correct that.")
                                     continue
 
-                                response_text = (
-                                    f"Your order is confirmed! Your order number is {current_order_id} "
-                                    f"and the total is {format_price(total_amount)}. Thank you!"
-                                )
-                                speak(response_text)
+                                speak(f"✅ Your order has been placed.")
                                 collected_orders = []
                                 order_placed = True
-                                conversation_context.append(f"Assistant: {response_text}")
+                                conversation_context.append(f"Assistant: ✅ Your order has been placed.")
+                                is_active = False
                                 break
                             except Exception as e:
                                 print("⚠️ Error processing order:", str(e))
@@ -1091,7 +1151,7 @@ if __name__ == "__main__":
                             collected_orders = []
                             break
                         else:
-                            speak("I didn't quite understand. Would you like me to place this order?")
+                            speak("I didn't quite understand. Should I place this order?")
 
                     if order_placed:
                         continue
@@ -1102,16 +1162,5 @@ if __name__ == "__main__":
 
             if exit_flag:
                 break
-    except FileNotFoundError as e:
-        if "config.json" in str(e):
-            print("❌ Configuration file not found. Please create config.json with proper settings.")
-        else:
-            print(f"❌ Required file not found: {e}")
-    except KeyError as e:
-        print(f"❌ Missing configuration key: {e}")
-        print("Please check your config.json file for missing required fields.")
-    except Exception as e:
-        print(f"❌ Unexpected error: {e}")
-        log_conversation("System", f"Unexpected error: {e}")
     finally:
         log_session_end(LOG_FILE)
